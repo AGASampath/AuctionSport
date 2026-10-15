@@ -1,0 +1,154 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Auction test page</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 12px; max-width: 560px; }
+  button { padding: 10px 14px; margin: 3px; font-size: 15px; }
+  input, select { padding: 8px; margin: 3px; font-size: 15px; }
+  .card { border: 1px solid #bbb; border-radius: 8px; padding: 10px; margin: 10px 0; }
+  h3 { margin: 0 0 6px; }
+  .big { font-size: 28px; font-weight: 600; }
+  .low { color: #b00020; }
+  .msg { color: #b00020; min-height: 1.2em; }
+</style>
+</head>
+<body>
+<h2>Auction test page</h2>
+<p style="font-size:13px">Temporary page to check the backend. The Angular screens replace it.</p>
+<p>Auction ID <input id="auction" size="4" value="1"> <button onclick="connect(null)">Watch</button></p>
+
+<div class="card">
+  <h3>Live</h3>
+  <div id="live">Connecting...</div>
+  <div id="teams" style="font-size:13px;margin-top:8px"></div>
+  <div id="last" style="font-size:13px;margin-top:6px"></div>
+</div>
+
+<div class="card">
+  <h3>Owner</h3>
+  <select id="team"></select>
+  <input id="pin" placeholder="PIN" size="6">
+  <button onclick="login()">Log in</button>
+  <div id="owner"></div>
+  <div class="msg" id="msg"></div>
+</div>
+
+<div class="card">
+  <h3>Admin</h3>
+  <input id="key" type="password" placeholder="Admin key">
+  <button onclick="adm('seed-demo')">Load demo data</button><br>
+  <select id="cat"><option value="">All</option><option>Batting</option><option>Bowling</option><option>AllRounder</option></select>
+  <button onclick="adm('pick', {category: val('cat')})">Pick player</button>
+  <button onclick="adm('start')">Start</button>
+  <button onclick="adm('pause')">Pause</button>
+  <button onclick="adm('resume')">Resume</button><br>
+  <button onclick="adm('sold')">Mark sold</button>
+  <button onclick="adm('unsold')">Mark unsold</button>
+  <button onclick="adm('cancel')">Cancel player</button>
+  <button onclick="adm('undo')">Undo last sale</button>
+  <button onclick="adm('round2')">Start round 2</button>
+  <div class="msg" id="amsg"></div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@microsoft/signalr@8.0.7/dist/browser/signalr.min.js"></script>
+<script>
+  var conn = null, state = null, offset = 0, myTeamId = null;
+
+  function val(id) { return document.getElementById(id).value; }
+  function fmt(n) { return Number(n).toLocaleString(); }
+
+  async function connect(token) {
+    if (conn) { try { await conn.stop(); } catch (e) {} }
+    conn = new signalR.HubConnectionBuilder()
+      .withUrl('/hub/auction' + (token ? '?token=' + token : '?auctionId=' + val('auction')))
+      .withAutomaticReconnect()
+      .build();
+    conn.on('state', render);
+    conn.onreconnected(async function () { render(await conn.invoke('GetState')); });
+    await conn.start();
+    render(await conn.invoke('GetState'));
+  }
+
+  function render(s) {
+    state = s;
+    offset = new Date(s.serverNowUtc).getTime() - Date.now();
+    var p = s.player;
+    var html = '<div>Round ' + s.round + (s.paused ? ' (paused)' : '') + ', phase: ' + s.phase + '</div>';
+    if (p) {
+      html += '<div><b>' + p.name + '</b> (' + p.category + '), base ' + fmt(p.basePrice) +
+              '<br>Matches ' + p.matches + ', runs ' + p.runs + ', wickets ' + p.wickets + '</div>' +
+              '<div class="big">' + fmt(s.currentBid) + '</div>' +
+              '<div>' + (s.leaderTeamName ? 'Held by ' + s.leaderTeamName : 'No bids yet') +
+              ' &nbsp; <span id="timer"></span></div>';
+    } else {
+      html += '<div>No player on the block.</div>';
+    }
+    html += '<div style="font-size:13px">Left ' + s.playersLeft + ', sold ' + s.sold + ', unsold ' + s.unsold + '</div>';
+    document.getElementById('live').innerHTML = html;
+
+    document.getElementById('teams').innerHTML = s.teams.map(function (t) {
+      return '<div class="' + (t.lowWallet ? 'low' : '') + '">' + t.name + ': purse ' + fmt(t.walletRemaining) +
+             ', squad ' + t.squadCount + '</div>';
+    }).join('');
+    document.getElementById('last').textContent = s.lastSold || '';
+
+    var sel = document.getElementById('team');
+    if (sel.options.length !== s.teams.length) {
+      sel.innerHTML = s.teams.map(function (t) { return '<option value="' + t.id + '">' + t.name + '</option>'; }).join('');
+    }
+    renderOwner();
+  }
+
+  function renderOwner() {
+    var box = document.getElementById('owner');
+    if (!myTeamId || !state) { box.innerHTML = ''; return; }
+    var steps = (state.leaderTeamId == null ? [0] : []).concat(state.increments);
+    box.innerHTML = steps.map(function (n) {
+      return '<button onclick="bid(' + n + ')">' + (n === 0 ? 'Bid base' : '+' + fmt(n)) + '</button>';
+    }).join('');
+  }
+
+  setInterval(function () {
+    var el = document.getElementById('timer');
+    if (!el || !state) return;
+    var ms = null;
+    if (state.paused) ms = state.remainingMs;
+    else if (state.deadlineUtc) ms = new Date(state.deadlineUtc).getTime() - (Date.now() + offset);
+    el.textContent = ms == null ? '' : Math.max(0, Math.ceil(ms / 1000)) + 's left';
+  }, 250);
+
+  async function login() {
+    var res = await fetch('/api/login', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ teamId: Number(val('team')), pin: val('pin') })
+    });
+    var data = await res.json();
+    if (!res.ok) { document.getElementById('msg').textContent = data.error; return; }
+    myTeamId = data.teamId;
+    document.getElementById('msg').textContent = 'Logged in as ' + data.teamName;
+    await connect(data.token);
+  }
+
+  async function bid(n) {
+    var err = await conn.invoke('PlaceBid', n);
+    document.getElementById('msg').textContent = err || '';
+  }
+
+  async function adm(action, body) {
+    var res = await fetch('/api/admin/auctions/' + val('auction') + '/' + action, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': val('key') },
+      body: JSON.stringify(body || {})
+    });
+    var text = await res.text();
+    var msg = res.ok ? '' : (res.status === 401 ? 'Wrong admin key.' : (text ? (JSON.parse(text).error || text) : res.status));
+    document.getElementById('amsg').textContent = msg;
+  }
+
+  connect(null).catch(function (e) { document.getElementById('live').textContent = 'Cannot connect: ' + e; });
+</script>
+</body>
+</html>

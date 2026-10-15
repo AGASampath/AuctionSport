@@ -1,0 +1,235 @@
+<section class="page crud">
+  @if (loadError()) {
+    <p class="error">{{ loadError() }}</p>
+  } @else if (loading()) {
+    <p class="muted">Loading...</p>
+  } @else {
+    <div class="layout">
+      <!-- Add or edit -->
+      <form class="card editor" #f="ngForm" (ngSubmit)="save(f)" novalidate>
+        <div class="editor-head">
+          <h2>{{ editing() ? 'Edit ' + editing()!.name : 'Add player' }}</h2>
+          @if (editing()) {
+            <button class="btn small" type="button" (click)="startAdd(f)">New player</button>
+          }
+        </div>
+
+        <app-image-picker
+          noun="photo"
+          [round]="true"
+          [currentUrl]="editing()?.photoUrl ?? null"
+          [(file)]="photoFile"
+          [(removed)]="removePhoto"
+          (error)="formError.set($event)"
+        />
+
+        <div class="grid2 fields">
+          <label class="field span2">
+            <span>Player name *</span>
+            <input name="name" [(ngModel)]="form.name" required maxlength="80" placeholder="Full name"
+                   #name="ngModel" [class.invalid]="name.invalid && name.touched" />
+          </label>
+
+          <div class="field span2">
+            <span>Category *</span>
+            <div class="segmented" [class.invalid]="f.submitted && !form.category">
+              @for (c of categories; track c.value) {
+                <label>
+                  <input type="radio" name="category" [value]="c.value" [(ngModel)]="form.category" required />
+                  <span>{{ c.label }}</span>
+                </label>
+              }
+            </div>
+          </div>
+
+          <label class="field">
+            <span>Base price *</span>
+            <input name="basePrice" type="number" min="0" [(ngModel)]="form.basePrice" required placeholder="500"
+                   #base="ngModel" [class.invalid]="base.invalid && base.touched" />
+          </label>
+          <label class="field">
+            <span>Style</span>
+            <input name="style" [(ngModel)]="form.style" list="player-styles" placeholder="Right hand bat" />
+            <datalist id="player-styles">
+              @for (s of styles; track s) {
+                <option [value]="s"></option>
+              }
+            </datalist>
+          </label>
+
+          <div class="stats span2">
+            <label class="field">
+              <span>Matches</span>
+              <input name="matches" type="number" min="0" [(ngModel)]="form.matches" placeholder="0" />
+            </label>
+            <label class="field">
+              <span>Runs</span>
+              <input name="runs" type="number" min="0" [(ngModel)]="form.runs" placeholder="0" />
+            </label>
+            <label class="field">
+              <span>Wickets</span>
+              <input name="wickets" type="number" min="0" [(ngModel)]="form.wickets" placeholder="0" />
+            </label>
+          </div>
+
+          <label class="field span2">
+            <span>Other info</span>
+            <textarea name="info" rows="2" [(ngModel)]="form.info" maxlength="500"
+                      placeholder="Optional, shown on the big screen"></textarea>
+          </label>
+        </div>
+
+        <fieldset class="retain">
+          <legend>Retention</legend>
+          <div class="grid2">
+            <label class="field">
+              <span>Retained by team</span>
+              <select name="retainedTeamId" [ngModel]="form.retainedTeamId" (ngModelChange)="teamPicked($event)">
+                <option [ngValue]="null">None (in auction)</option>
+                @for (t of teams(); track t.id) {
+                  <option [ngValue]="t.id">{{ t.name }}</option>
+                }
+              </select>
+            </label>
+            <label class="field">
+              <span>Retention price</span>
+              <input name="retentionPrice" type="number" min="0" [(ngModel)]="form.retentionPrice"
+                     [disabled]="!form.retainedTeamId" placeholder="0" />
+            </label>
+          </div>
+          @if (retainingTeam(); as t) {
+            <p class="muted small">
+              {{ t.name }}: {{ t.remaining | money }} left in the wallet, {{ t.players }} of {{ t.squadSize }} squad places used.
+              The retention price is taken from the wallet.
+            </p>
+          } @else if (teams().length === 0) {
+            <p class="muted small">Add teams first to retain players.</p>
+          }
+        </fieldset>
+
+        @if (formError()) {
+          <p class="error">{{ formError() }}</p>
+        }
+
+        <div class="buttons">
+          @if (editing()) {
+            <button class="btn" type="button" (click)="startAdd(f)" [disabled]="saving()">Cancel</button>
+          }
+          <button class="btn primary" type="submit" [disabled]="saving()">
+            {{ saving() ? 'Saving...' : editing() ? 'Save changes' : 'Save player' }}
+          </button>
+        </div>
+      </form>
+
+      <!-- List -->
+      <div class="list">
+        <div class="tiles">
+          <div class="tile"><b>{{ summary().total }}</b><span>Total</span></div>
+          <div class="tile"><b>{{ summary().retained }}</b><span>Retained</span></div>
+          <div class="tile strong"><b>{{ summary().pool }}</b><span>Auction pool</span></div>
+          <div class="tile"><b>{{ summary().sold }}</b><span>Sold</span></div>
+          <div class="tile"><b>{{ summary().unsold }}</b><span>Unsold</span></div>
+        </div>
+
+        <div class="filters">
+          <input type="search" placeholder="Search name or style" [ngModel]="search()" (ngModelChange)="search.set($event)" />
+          <select [ngModel]="categoryFilter()" (ngModelChange)="categoryFilter.set($event)">
+            <option value="All">All categories</option>
+            @for (c of categories; track c.value) {
+              <option [value]="c.value">{{ c.label }}</option>
+            }
+          </select>
+          <select [ngModel]="statusFilter()" (ngModelChange)="statusFilter.set($event)">
+            @for (s of statuses; track s) {
+              <option [value]="s">{{ s === 'All' ? 'All statuses' : s }}</option>
+            }
+          </select>
+        </div>
+
+        @if (notice()) {
+          <p class="ok">{{ notice() }}</p>
+        }
+        @if (listError()) {
+          <p class="error">{{ listError() }}</p>
+        }
+
+        @if (players().length === 0) {
+          <div class="empty">
+            <p><strong>No players yet.</strong></p>
+            <p class="muted">Add each player with the form. Choose a retaining team to put a player straight into that squad.</p>
+          </div>
+        } @else if (filtered().length === 0) {
+          <div class="empty">
+            <p class="muted">No players match these filters.</p>
+            <button class="btn small" type="button" (click)="clearFilters()">Clear filters</button>
+          </div>
+        } @else {
+          <p class="muted small count">Showing {{ filtered().length }} of {{ players().length }}</p>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th class="wide">Category</th>
+                  <th class="num">Base</th>
+                  <th class="num wide">M / R / W</th>
+                  <th>Status</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (p of filtered(); track p.id) {
+                  <tr [class.selected]="editing()?.id === p.id">
+                    <td>
+                      <div class="entity-cell">
+                        <span class="avatar">
+                          @if (p.photoUrl) {
+                            <img [src]="p.photoUrl" alt="" />
+                          } @else {
+                            {{ p.name.charAt(0) }}
+                          }
+                        </span>
+                        <span>
+                          <strong>{{ p.name }}</strong>
+                          <small class="muted">{{ p.style || categoryLabel(p.category) }}</small>
+                        </span>
+                      </div>
+                    </td>
+                    <td class="wide">{{ categoryLabel(p.category) }}</td>
+                    <td class="num">{{ p.basePrice | money }}</td>
+                    <td class="num wide">{{ p.matches }} / {{ p.runs }} / {{ p.wickets }}</td>
+                    <td>
+                      <span class="tag" [class]="p.status.toLowerCase()">{{ p.status === 'Available' ? 'In pool' : p.status }}</span>
+                      @if (p.status === 'Retained') {
+                        <small class="muted">{{ p.retainedTeamName }}, {{ p.retentionPrice | money }}</small>
+                      } @else if (p.status === 'Sold') {
+                        <small class="muted">{{ p.soldTeamName }}, {{ p.soldPrice | money }}</small>
+                      }
+                    </td>
+                    <td class="actions">
+                      @if (p.status === 'Sold') {
+                        <span class="muted small">Sold</span>
+                      } @else {
+                        <button class="btn small" type="button" (click)="startEdit(p, f)">Edit</button>
+                        <button class="btn small danger-outline" type="button" (click)="askDelete(p)">Delete</button>
+                      }
+                    </td>
+                  </tr>
+                  @if (confirmDelete()?.id === p.id) {
+                    <tr class="confirm">
+                      <td colspan="6">
+                        <span>Delete <strong>{{ p.name }}</strong>?@if (p.status === 'Retained') { {{ p.retainedTeamName }} gets the squad place and {{ p.retentionPrice | money }} back.}</span>
+                        <button class="btn small" type="button" (click)="confirmDelete.set(null)">Cancel</button>
+                        <button class="btn small danger" type="button" (click)="remove(p)">Delete player</button>
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</section>

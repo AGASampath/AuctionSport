@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cricket auction wireframes</title>
+<style>
+  :root { --ink:#15221a; --muted:#5d6d63; --line:#cfd8cc; --tint:#e8f0e5; --accent:#1b5e3b; --soft:#f4f6f2; color-scheme: light; }
+  * { box-sizing: border-box; }
+  body { font-family: "Segoe UI", Arial, sans-serif; color: var(--ink); background: #fff; margin: 0; padding: 24px; line-height: 1.45; }
+  h1 { font-size: 24px; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 36px 0 4px; }
+  .note { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+  nav a { margin-right: 12px; font-size: 14px; color: var(--accent); }
+  .stage { background: var(--soft); border-radius: 12px; padding: 16px; display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+  .phone { width: 270px; background: #fff; border: 1px solid #9aa89a; border-radius: 22px; padding: 16px; }
+  .panel { width: 440px; max-width: 100%; background: #fff; border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+  .screen { width: 100%; max-width: 760px; background: #fff; border: 1px solid #9aa89a; border-radius: 8px; padding: 14px; }
+  .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .between { justify-content: space-between; }
+  .g2 { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 8px; }
+  .g3 { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 8px; }
+  .g5 { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 6px; }
+  .f { font-size: 11px; color: var(--muted); }
+  .in { border: 1px solid #b9c6b6; border-radius: 6px; padding: 8px 10px; font-size: 14px; background: #fff; min-height: 36px; }
+  .btn { border: 1px solid #8fa08c; border-radius: 8px; padding: 9px 12px; font-size: 14px; background: #fff; text-align: center; }
+  .btn.p { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn.g { background: #f0b400; border-color: #c99700; color: #3a2b00; }
+  .btn.big { padding: 14px; font-size: 16px; font-weight: 600; }
+  .ph { border: 1px dashed #8fa08c; border-radius: 8px; background: #f4f6f2; display: flex; align-items: center; justify-content: center; color: #8a998a; font-size: 12px; }
+  .stat { background: var(--soft); border-radius: 8px; padding: 8px; text-align: center; }
+  .stat b { display: block; font-size: 16px; }
+  .stat span { font-size: 11px; color: var(--muted); }
+  .pill { display: inline-block; padding: 2px 10px; border-radius: 999px; font-size: 12px; background: var(--tint); color: var(--accent); }
+  .pill.w { background: #fdf0cf; color: #6b4d00; }
+  .pill.b { background: #fbe3e0; color: #b3261e; }
+  .card { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; margin-bottom: 10px; }
+  .card h3 { font-size: 14px; margin: 0 0 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; font-weight: 500; color: var(--muted); padding: 4px 0; }
+  td { padding: 5px 0; border-top: 1px solid #e6ede3; }
+  .r { text-align: right; }
+  .big-num { font-size: 34px; font-weight: 700; text-align: center; margin: 2px 0; }
+  .center { text-align: center; }
+  .dark { background: #0d2a1c; color: #f3f7f1; border-color: #0d2a1c; }
+  .dark .f, .dark .muted { color: #a9bfb0; }
+  .dark .stat { background: #163b28; }
+  .dark .stat span { color: #a9bfb0; }
+  .bid { background: #163b28; border-radius: 10px; padding: 14px; text-align: center; }
+  .bid .amt { font-size: 56px; font-weight: 700; color: #f0b400; line-height: 1.1; }
+  .team { background: #163b28; border-radius: 8px; padding: 6px; font-size: 12px; text-align: center; }
+  .team.lead { outline: 2px solid #f0b400; }
+  .team.low { color: #ffb4ab; }
+  .chip { display: inline-block; border: 1px solid #8fa08c; border-radius: 6px; padding: 3px 10px; font-size: 13px; margin: 0 4px 4px 0; }
+</style>
+</head>
+<body>
+<h1>Cricket player auction: wireframes</h1>
+<p class="note">All numbers and names are placeholders. Layout only, not final styling.</p>
+<nav>
+  <a href="#owner-login">Owner login</a><a href="#owner-bid">Owner bidding</a><a href="#screen">Big screen</a>
+  <a href="#teams">Teams</a><a href="#players">Players</a><a href="#config">Configuration</a>
+  <a href="#live">Live control</a><a href="#reports">Reports</a>
+</nav>
+
+<h2 id="owner-login">1. Owner login (phone)</h2>
+<p class="note">Owner picks their team and enters the PIN set by the admin.</p>
+<div class="stage">
+  <div class="phone">
+    <div class="center" style="margin-bottom:14px">
+      <div class="ph" style="width:52px;height:52px;border-radius:50%;margin:0 auto 8px">Logo</div>
+      <b>Player auction</b><div class="f">Team owner login</div>
+    </div>
+    <div class="f">Team</div><div class="in" style="margin-bottom:10px">Select your team</div>
+    <div class="f">PIN</div><div class="in" style="margin-bottom:14px">4-digit PIN</div>
+    <div class="btn p big">Enter auction</div>
+  </div>
+</div>
+
+<h2 id="owner-bid">2. Owner bidding (phone)</h2>
+<p class="note">Increment buttons come from the admin configuration. Before the first bid, a "Bid base price" button appears.</p>
+<div class="stage">
+  <div class="phone">
+    <div class="row between" style="margin-bottom:10px">
+      <div><b>Team Lions</b><div class="f">Squad 4 of 12</div></div>
+      <div style="text-align:right"><div class="f">Purse left</div><b>28,500</b></div>
+    </div>
+    <div class="card">
+      <div class="row" style="flex-wrap:nowrap;margin-bottom:8px">
+        <div class="ph" style="width:64px;height:64px;flex:none">Photo</div>
+        <div><b>Player name</b><br><span class="pill">All-rounder</span><div class="f">Base price 500</div></div>
+      </div>
+      <div class="g3"><div class="stat"><span>Matches</span><b>42</b></div><div class="stat"><span>Runs</span><b>610</b></div><div class="stat"><span>Wkts</span><b>28</b></div></div>
+    </div>
+    <div class="center"><div class="f">Current bid</div><div class="big-num">1,500</div><div class="f">Held by Team Tigers</div><div style="margin-top:4px">0:12 left</div></div>
+    <div class="g3" style="margin-top:10px"><div class="btn big">+100</div><div class="btn big">+1,000</div><div class="btn big">+5,000</div></div>
+  </div>
+</div>
+
+<h2 id="screen">3. Big screen (projector)</h2>
+<p class="note">Read-only. Shows the current player, the live bid, and every team's remaining purse and squad count. Low purse teams are flagged.</p>
+<div class="stage">
+  <div class="screen dark">
+    <div class="row between f" style="margin-bottom:10px"><span>Round 1</span><b style="color:#f3f7f1;font-size:16px">Player auction</b><span>28 to go, 30 sold, 6 unsold</span></div>
+    <div class="row" style="align-items:stretch;flex-wrap:nowrap">
+      <div style="flex:1">
+        <div class="row" style="flex-wrap:nowrap;align-items:flex-start">
+          <div class="ph" style="width:130px;height:150px;flex:none;background:#163b28;border-color:#4f7a62;color:#a9bfb0">Photo</div>
+          <div style="flex:1"><div style="font-size:22px;font-weight:700">Player name</div><div class="muted">All-rounder, right-hand bat</div>
+            <div class="g2" style="margin-top:8px"><div class="stat"><span>Matches</span><b>42</b></div><div class="stat"><span>Runs</span><b>610</b></div><div class="stat"><span>Wickets</span><b>28</b></div><div class="stat"><span>Base price</span><b>500</b></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="bid" style="width:230px"><div class="f">Top bid</div><div class="amt">1,500</div><div>Team Tigers</div><div style="font-size:22px;margin-top:6px">0:12</div></div>
+    </div>
+    <div class="f" style="margin:10px 0 6px">Last sold: Player X to Team Lions for 2,000</div>
+    <div class="g5">
+      <div class="team">Lions<br>8,500 (4)</div><div class="team lead">Tigers<br>9,100 (3)</div><div class="team">Team 3<br>7,200 (5)</div><div class="team low">Team 4<br>1,800 (9)</div><div class="team">Team 5<br>9,600 (2)</div>
+      <div class="team">Team 6<br>9,000 (3)</div><div class="team">Team 7<br>8,300 (4)</div><div class="team">Team 8<br>8,900 (3)</div><div class="team">Team 9<br>7,500 (5)</div><div class="team">Team 10<br>8,100 (4)</div>
+    </div>
+  </div>
+</div>
+
+<h2 id="teams">4. Admin: teams (add, edit, bulk upload)</h2>
+<p class="note">Retained players are chosen on the players screen. Total players minus retained players gives the auction pool.</p>
+<div class="stage">
+  <div class="panel">
+    <div class="card"><h3>Bulk import teams</h3><div class="g2"><div class="btn">Upload CSV file</div><div class="btn">Sample file</div></div></div>
+    <div class="card"><h3>Add or edit team</h3>
+      <div class="row" style="flex-wrap:nowrap;margin-bottom:8px"><div class="ph" style="width:56px;height:56px;flex:none">Logo</div><div style="flex:1"><div class="f">Team name</div><div class="in">Team Lions</div></div></div>
+      <div class="g2">
+        <div><div class="f">Short name</div><div class="in">LIO</div></div><div><div class="f">Owner name</div><div class="in">Owner name</div></div>
+        <div><div class="f">Phone</div><div class="in">07X XXX XXXX</div></div><div><div class="f">Login PIN</div><div class="in">4821</div></div>
+        <div><div class="f">Team wallet</div><div class="in">30,000</div></div><div><div class="f">Squad size</div><div class="in">12</div></div>
+      </div>
+      <div class="btn p" style="margin-top:10px">Save team</div>
+    </div>
+    <div class="card"><h3>Teams (10 of 10)</h3>
+      <table><tr><th>Team</th><th>Owner</th><th class="r">Wallet</th></tr><tr><td>Team Lions</td><td>Owner 1</td><td class="r">30,000</td></tr><tr><td>Team Tigers</td><td>Owner 2</td><td class="r">30,000</td></tr></table>
+    </div>
+  </div>
+</div>
+
+<h2 id="players">5. Admin: players (add, edit, bulk upload)</h2>
+<p class="note">The preview flags rows that need fixing before the import is confirmed.</p>
+<div class="stage">
+  <div class="panel">
+    <div class="card"><h3>Bulk import players</h3>
+      <div class="ph" style="height:70px;margin-bottom:8px">Drop players file here (CSV)</div>
+      <div class="g2"><div class="btn">Sample file</div><div class="btn">Upload photos</div></div>
+    </div>
+    <div class="card"><h3>Add or edit player</h3>
+      <div class="row" style="flex-wrap:nowrap;margin-bottom:8px"><div class="ph" style="width:56px;height:56px;flex:none">Photo</div><div style="flex:1"><div class="f">Player name</div><div class="in">Player name</div></div></div>
+      <div class="g2">
+        <div><div class="f">Category</div><div class="in">All-rounder</div></div><div><div class="f">Base price</div><div class="in">500</div></div>
+        <div><div class="f">Matches</div><div class="in">42</div></div><div><div class="f">Runs</div><div class="in">610</div></div>
+        <div><div class="f">Wickets</div><div class="in">28</div></div><div><div class="f">Style</div><div class="in">Right hand</div></div>
+        <div><div class="f">Retained by team</div><div class="in">None</div></div><div><div class="f">Retention price</div><div class="in">0</div></div>
+      </div>
+      <div class="btn p" style="margin-top:10px">Save player</div>
+    </div>
+    <div class="card"><h3>Pool</h3>
+      <div class="g3"><div class="stat"><span>Total</span><b>80</b></div><div class="stat"><span>Retained</span><b>16</b></div><div class="stat"><span>Auction pool</span><b>64</b></div></div>
+    </div>
+    <div class="card"><h3>Preview</h3>
+      <table><tr><th>Player</th><th>Type</th><th class="r">Base</th><th class="r">Status</th></tr>
+        <tr><td>Player A</td><td>Batting</td><td class="r">500</td><td class="r"><span class="pill">OK</span></td></tr>
+        <tr><td>Player B</td><td>Bowling</td><td class="r">500</td><td class="r"><span class="pill">OK</span></td></tr>
+        <tr><td>Player C</td><td>Missing</td><td class="r">500</td><td class="r"><span class="pill b">Fix</span></td></tr></table>
+    </div>
+  </div>
+</div>
+
+<h2 id="config">6. Admin: configuration</h2>
+<p class="note">Bid buttons and timing can differ for round 2. Changes made during the auction apply from the next bid.</p>
+<div class="stage">
+  <div class="panel">
+    <div class="card"><h3>Bid buttons</h3><div class="row between" style="margin-bottom:6px"><span class="f">Buttons owners see</span><span class="in" style="min-height:0;padding:3px 10px">Round 1</span></div>
+      <span class="chip">+100</span><span class="chip">+1,000</span><span class="chip">+5,000</span><span class="chip">Add</span></div>
+    <div class="card"><h3>Timing</h3><div class="g2"><div><div class="f">Confirm wait (sec)</div><div class="in">30</div></div><div><div class="f">Reset on new bid</div><div class="in">Yes, full time</div></div></div></div>
+    <div class="card"><h3>Wallet and squad rules</h3>
+      <div class="g2"><div><div class="f">Default team wallet</div><div class="in">30,000</div></div><div><div class="f">Min squad size</div><div class="in">11</div></div>
+        <div><div class="f">Max squad size</div><div class="in">14</div></div><div><div class="f">Low wallet alert</div><div class="in">2,000</div></div></div>
+      <div class="f" style="margin-top:8px">[x] Keep enough wallet to fill minimum squad</div></div>
+    <div class="card"><h3>Player draw</h3><div class="f">[x] Random pick inside chosen category<br>[x] Round 2 uses unsold players only</div></div>
+    <div class="g2"><div class="btn">Reset to saved</div><div class="btn p">Save changes</div></div>
+  </div>
+</div>
+
+<h2 id="live">7. Admin: live control</h2>
+<p class="note">Run on a laptop during the auction. Undo returns the last sold player to the pool and refunds the team.</p>
+<div class="stage">
+  <div class="panel">
+    <div class="card"><div class="row between" style="margin-bottom:8px"><b>Live auction</b><span class="pill">Round 1, running</span></div>
+      <div class="row" style="flex-wrap:nowrap;border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:8px">
+        <div class="ph" style="width:44px;height:44px;flex:none">Photo</div><div style="flex:1"><b>Player name</b><div class="f">Bid 1,500 by Team Tigers</div></div><div style="text-align:right"><div class="f">Confirming in</div><b>0:21</b></div></div>
+      <div class="g2"><div class="btn">Pause</div><div class="btn">Resume</div><div class="btn">Undo last sold</div><div class="btn">Change config</div></div></div>
+    <div class="card"><h3>Next player</h3><div class="g3" style="margin-bottom:8px"><div class="btn">Batting</div><div class="btn">Bowling</div><div class="btn">All-rounder</div></div>
+      <div class="btn p">Pick random player</div><div class="f" style="margin-top:8px">Last sold: Player X to Team Lions for 2,000</div></div>
+    <div class="card"><h3>Round progress</h3><div class="g3"><div class="stat"><span>Left</span><b>28</b></div><div class="stat"><span>Sold</span><b>30</b></div><div class="stat"><span>Unsold</span><b>6</b></div></div>
+      <div class="g2" style="margin-top:8px"><div class="btn g">Mark sold</div><div class="btn">Mark unsold</div></div>
+      <div class="btn" style="margin-top:8px">Start round 2 with unsold players</div></div>
+  </div>
+</div>
+
+<h2 id="reports">8. Admin: reports (after the auction)</h2>
+<p class="note">Each report can be downloaded. Team-wise report lists retained and bought players with prices.</p>
+<div class="stage">
+  <div class="panel">
+    <div class="card"><div class="row between" style="margin-bottom:6px"><b>Team-wise report</b><span class="btn" style="padding:4px 10px">Download</span></div>
+      <div class="f" style="margin-bottom:6px">Team Lions: players 12, spent 24,500, left 5,500</div>
+      <table><tr><th>Player</th><th>Type</th><th class="r">Price</th></tr><tr><td>Player A (retained)</td><td>Batting</td><td class="r">0</td></tr><tr><td>Player B</td><td>Bowling</td><td class="r">2,000</td></tr><tr><td>Player C</td><td>All-round</td><td class="r">3,500</td></tr></table></div>
+    <div class="card"><div class="row between" style="margin-bottom:6px"><b>Sold list (58)</b><span class="btn" style="padding:4px 10px">Download</span></div>
+      <table><tr><th>Player</th><th>Team</th><th class="r">Price</th></tr><tr><td>Player B</td><td>Lions</td><td class="r">2,000</td></tr><tr><td>Player D</td><td>Tigers</td><td class="r">1,500</td></tr></table></div>
+    <div class="card"><div class="row between" style="margin-bottom:6px"><b>Unsold list (6)</b><span class="btn" style="padding:4px 10px">Download</span></div>
+      <table><tr><th>Player</th><th>Type</th><th class="r">Base</th></tr><tr><td>Player E</td><td>Batting</td><td class="r">500</td></tr><tr><td>Player F</td><td>Bowling</td><td class="r">500</td></tr></table></div>
+  </div>
+</div>
+</body>
+</html>

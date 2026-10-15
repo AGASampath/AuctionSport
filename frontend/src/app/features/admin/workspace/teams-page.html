@@ -1,0 +1,173 @@
+<section class="page crud">
+  @if (loadError()) {
+    <p class="error">{{ loadError() }}</p>
+  } @else if (loading()) {
+    <p class="muted">Loading...</p>
+  } @else {
+    <div class="layout">
+      <!-- Add or edit -->
+      <form class="card editor" #f="ngForm" (ngSubmit)="save(f)" novalidate>
+        <div class="editor-head">
+          <h2>{{ editing() ? 'Edit ' + editing()!.name : 'Add team' }}</h2>
+          @if (editing()) {
+            <button class="btn small" type="button" (click)="startAdd(f)">New team</button>
+          }
+        </div>
+
+        <app-image-picker
+          noun="logo"
+          [placeholder]="form.shortName"
+          [currentUrl]="editing()?.logoUrl ?? null"
+          [(file)]="logoFile"
+          [(removed)]="removeLogo"
+          (error)="formError.set($event)"
+        />
+
+        <div class="grid2">
+          <label class="field span2">
+            <span>Team name *</span>
+            <input name="name" [ngModel]="form.name" (ngModelChange)="nameChanged($event)" required maxlength="60"
+                   placeholder="Team Lions" #name="ngModel" [class.invalid]="name.invalid && name.touched" />
+          </label>
+          <label class="field">
+            <span>Short name *</span>
+            <input name="shortName" [ngModel]="form.shortName" (ngModelChange)="shortNameChanged($event)" required
+                   maxlength="6" placeholder="LIO" #short="ngModel" [class.invalid]="short.invalid && short.touched" />
+          </label>
+          <label class="field">
+            <span>Login PIN *</span>
+            <div class="with-button">
+              <input name="pin" [(ngModel)]="form.pin" required pattern="[0-9]{4,6}" inputmode="numeric" maxlength="6"
+                     placeholder="4 to 6 digits" #pin="ngModel" [class.invalid]="pin.invalid && pin.touched" />
+              <button class="btn small" type="button" (click)="generatePin()">Generate</button>
+            </div>
+          </label>
+          <label class="field">
+            <span>Owner name</span>
+            <input name="ownerName" [(ngModel)]="form.ownerName" placeholder="Optional" />
+          </label>
+          <label class="field">
+            <span>Phone</span>
+            <input name="phone" type="tel" [(ngModel)]="form.phone" placeholder="Optional" />
+          </label>
+          <label class="field">
+            <span>Team wallet</span>
+            <input name="wallet" type="number" min="0" [(ngModel)]="form.wallet"
+                   [placeholder]="'Default ' + (config()?.defaultWallet | money)" />
+          </label>
+          <label class="field">
+            <span>Squad size</span>
+            <input name="squadSize" type="number" min="1" max="50" [(ngModel)]="form.squadSize"
+                   [placeholder]="'Default ' + config()?.maxSquad" />
+          </label>
+        </div>
+
+        @if (editing(); as t) {
+          @if (t.players > 0) {
+            <p class="muted small">Already spent {{ t.spent | money }} on {{ t.players }} {{ t.players === 1 ? 'player' : 'players' }}. Wallet and squad size can't go below that.</p>
+          }
+        }
+        @if (formError()) {
+          <p class="error">{{ formError() }}</p>
+        }
+
+        <div class="buttons">
+          @if (editing()) {
+            <button class="btn" type="button" (click)="startAdd(f)" [disabled]="saving()">Cancel</button>
+          }
+          <button class="btn primary" type="submit" [disabled]="saving()">
+            {{ saving() ? 'Saving...' : editing() ? 'Save changes' : 'Save team' }}
+          </button>
+        </div>
+      </form>
+
+      <!-- List -->
+      <div class="list">
+        <div class="list-head">
+          <h2>Teams ({{ teams().length }})</h2>
+          @if (teams().length) {
+            <span class="muted small">Total wallet {{ totals().wallet | money }}, {{ totals().players }} {{ totals().players === 1 ? 'player' : 'players' }} in squads</span>
+          }
+        </div>
+        @if (notice()) {
+          <p class="ok">{{ notice() }}</p>
+        }
+        @if (listError()) {
+          <p class="error">{{ listError() }}</p>
+        }
+
+        @if (teams().length === 0) {
+          <div class="empty">
+            <p><strong>No teams yet.</strong></p>
+            <p class="muted">Add each team with the form. Owners log in with their team and PIN.</p>
+          </div>
+        } @else {
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Team</th>
+                  <th class="wide">Owner</th>
+                  <th>PIN</th>
+                  <th class="num">Wallet</th>
+                  <th class="num wide">Left</th>
+                  <th class="num">Squad</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (t of teams(); track t.id) {
+                  <tr [class.selected]="editing()?.id === t.id">
+                    <td>
+                      <div class="entity-cell">
+                        <span class="avatar">
+                          @if (t.logoUrl) {
+                            <img [src]="t.logoUrl" alt="" />
+                          } @else {
+                            {{ t.shortName }}
+                          }
+                        </span>
+                        <span>
+                          <strong>{{ t.name }}</strong>
+                          <small class="muted">{{ t.shortName }}</small>
+                        </span>
+                      </div>
+                    </td>
+                    <td class="wide">
+                      {{ t.ownerName || '-' }}
+                      @if (t.phone) {
+                        <small class="muted">{{ t.phone }}</small>
+                      }
+                    </td>
+                    <td><code>{{ t.pin }}</code></td>
+                    <td class="num">{{ t.wallet | money }}</td>
+                    <td class="num wide">{{ t.remaining | money }}</td>
+                    <td class="num">{{ t.players }} / {{ t.squadSize }}</td>
+                    <td class="actions">
+                      <button class="btn small" type="button" (click)="startEdit(t, f)">Edit</button>
+                      <button class="btn small danger-outline" type="button" (click)="askDelete(t)">Delete</button>
+                    </td>
+                  </tr>
+                  @if (confirmDelete()?.id === t.id) {
+                    <tr class="confirm">
+                      <td colspan="7">
+                        @if (t.players > 0) {
+                          <span>{{ t.name }} already has players. Remove its purchases and retained players first.</span>
+                          <button class="btn small" type="button" (click)="confirmDelete.set(null)">OK</button>
+                        } @else {
+                          <span>Delete <strong>{{ t.name }}</strong>?</span>
+                          <button class="btn small" type="button" (click)="confirmDelete.set(null)">Cancel</button>
+                          <button class="btn small danger" type="button" (click)="remove(t)">Delete team</button>
+                        }
+                      </td>
+                    </tr>
+                  }
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    </div>
+  }
+</section>

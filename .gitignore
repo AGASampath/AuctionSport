@@ -1,0 +1,16 @@
+# Backend and frontend have their own .gitignore files for build output,
+# node_modules and backend/AppData (database and uploaded images).
+
+# Editors and OS
+.vs/
+.idea/
+*.user
+*.suo
+.DS_Store
+Thumbs.db
+
+# Local databases and backups, wherever they end up
+*.db
+*.db-shm
+*.db-wal
+*.bak-*

@@ -1,0 +1,158 @@
+// Shared layout comes from .crud in styles.scss.
+
+.fields {
+  margin-top: 14px;
+}
+
+// Category as three joined buttons
+.segmented {
+  display: flex;
+  border: 1px solid #b9c6b6;
+  border-radius: 8px;
+  overflow: hidden;
+
+  label {
+    flex: 1;
+    position: relative;
+  }
+
+  input {
+    position: absolute;
+    opacity: 0;
+    inset: 0;
+    min-height: 0;
+  }
+
+  span {
+    display: block;
+    padding: 9px 6px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--ink);
+    cursor: pointer;
+  }
+
+  label + label span {
+    border-left: 1px solid #b9c6b6;
+  }
+
+  input:checked + span {
+    background: var(--accent);
+    color: #fff;
+    font-weight: 600;
+  }
+
+  input:focus-visible + span {
+    outline: 2px solid var(--gold);
+    outline-offset: -2px;
+  }
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+textarea {
+  font: inherit;
+  border: 1px solid #b9c6b6;
+  border-radius: 6px;
+  padding: 8px 12px;
+  resize: vertical;
+}
+
+.retain {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 10px 12px 12px;
+  margin: 14px 0 0;
+
+  legend {
+    font-size: 12px;
+    color: var(--muted);
+    padding: 0 4px;
+  }
+
+  p {
+    margin: 8px 0 0;
+  }
+}
+
+input:disabled {
+  background: var(--soft);
+}
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.tile {
+  background: var(--soft);
+  border-radius: 8px;
+  padding: 8px 4px;
+  text-align: center;
+
+  b {
+    display: block;
+    font-size: 20px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  span {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  &.strong {
+    background: var(--tint);
+    color: var(--accent);
+  }
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+
+  input {
+    flex: 1 1 180px;
+  }
+
+  input,
+  select {
+    min-height: 38px;
+    padding: 6px 10px;
+  }
+}
+
+.count {
+  margin: 0 0 6px;
+}
+
+// Player status
+.tag {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: #eceeea;
+  color: #4a554e;
+
+  &.retained {
+    background: #fdf0cf;
+    color: #6b4d00;
+  }
+  &.sold {
+    background: var(--accent);
+    color: #fff;
+  }
+  &.unsold {
+    background: #fbe3e0;
+    color: var(--danger);
+  }
+}

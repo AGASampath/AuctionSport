@@ -1,0 +1,419 @@
+// Palette and building blocks from docs/wireframes.html.
+:root {
+  --ink: #15221a;
+  --muted: #5d6d63;
+  --line: #cfd8cc;
+  --tint: #e8f0e5;
+  --soft: #f4f6f2;
+  --accent: #1b5e3b;
+  --gold: #f0b400;
+  --danger: #b3261e;
+  --dark: #0d2a1c;
+  --dark-2: #163b28;
+  --radius: 10px;
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.45;
+  color: var(--ink);
+  background: #fff;
+}
+
+h1 {
+  font-size: 24px;
+  margin: 0 0 4px;
+}
+
+img {
+  max-width: 100%;
+}
+
+.page {
+  padding: 16px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.page.narrow {
+  max-width: 420px;
+  padding-top: 48px;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.error {
+  color: var(--danger);
+  margin: 0;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  span {
+    font-size: 12px;
+    color: var(--muted);
+  }
+}
+
+input,
+select {
+  font: inherit;
+  border: 1px solid #b9c6b6;
+  border-radius: 6px;
+  padding: 10px 12px;
+  background: #fff;
+  min-height: 44px;
+}
+
+.btn {
+  display: inline-block;
+  font: inherit;
+  border: 1px solid #8fa08c;
+  border-radius: 8px;
+  padding: 9px 14px;
+  background: #fff;
+  color: var(--ink);
+  text-align: center;
+  text-decoration: none;
+  cursor: pointer;
+
+  &.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  &.gold {
+    background: var(--gold);
+    border-color: #c99700;
+    color: #3a2b00;
+  }
+
+  &.big {
+    padding: 14px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  background: var(--tint);
+  color: var(--accent);
+
+  &.bad {
+    background: #fbe3e0;
+    color: var(--danger);
+  }
+}
+
+.btn.small {
+  padding: 5px 10px;
+  font-size: 13px;
+}
+
+.btn.danger {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: #fff;
+}
+
+.btn.danger-outline {
+  color: var(--danger);
+  border-color: #e3b4ae;
+}
+
+.card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 14px;
+  background: #fff;
+}
+
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+
+  @media (max-width: 560px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+// Wide tables scroll inside their own box so the page never scrolls sideways.
+.table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+
+  th {
+    text-align: left;
+    font-weight: 500;
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--soft);
+    padding: 8px 12px;
+    white-space: nowrap;
+  }
+
+  td {
+    padding: 8px 12px;
+    border-top: 1px solid #e6ede3;
+    vertical-align: middle;
+  }
+
+  .num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+// Auction status badge: <span class="status live">Live</span>
+.status {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+
+  &.draft {
+    background: #eceeea;
+    color: #4a554e;
+  }
+  &.live {
+    background: var(--accent);
+    color: #fff;
+  }
+  &.completed {
+    background: #e3ecf6;
+    color: #24507a;
+  }
+}
+
+// Add/edit pages inside an auction (teams, players): form on the left, list on the right.
+// <section class="page crud">
+.crud {
+  .layout {
+    display: grid;
+    grid-template-columns: minmax(0, 400px) minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+
+    @media (max-width: 980px) {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  h2 {
+    font-size: 16px;
+    margin: 0;
+  }
+
+  .editor-head,
+  .list-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .span2 {
+    grid-column: 1 / -1;
+  }
+
+  input.invalid,
+  .invalid {
+    border-color: var(--danger);
+  }
+
+  .small {
+    font-size: 12px;
+  }
+
+  .error {
+    margin: 12px 0 0;
+  }
+
+  .ok {
+    color: var(--accent);
+    margin: 0 0 10px;
+  }
+
+  .buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  // Avatar + name + small second line
+  .entity-cell {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+
+    > span:last-child {
+      display: flex;
+      flex-direction: column;
+    }
+  }
+
+  td small {
+    display: block;
+  }
+
+  .num {
+    white-space: nowrap;
+  }
+
+  tr.selected td {
+    background: var(--tint);
+  }
+
+  .actions {
+    text-align: right;
+    white-space: nowrap;
+
+    .btn + .btn {
+      margin-left: 6px;
+    }
+  }
+
+  .confirm td {
+    background: #fdf3f2;
+
+    span {
+      margin-right: 12px;
+    }
+
+    .btn + .btn {
+      margin-left: 6px;
+    }
+  }
+
+  .empty {
+    border: 1px dashed var(--line);
+    border-radius: var(--radius);
+    padding: 24px;
+    text-align: center;
+
+    p {
+      margin: 0 0 6px;
+    }
+  }
+
+  // Phones: drop secondary columns and stack the row buttons so nothing is cut off.
+  @media (max-width: 560px) {
+    .wide {
+      display: none;
+    }
+
+    th,
+    td {
+      padding-inline: 6px;
+    }
+
+    .actions {
+      white-space: normal;
+
+      .btn {
+        display: block;
+        width: 100%;
+      }
+
+      .btn + .btn {
+        margin: 4px 0 0;
+      }
+    }
+  }
+}
+
+// Small round team logo, or its short name when there is no logo.
+.avatar {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--tint);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+.topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 20px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--line);
+  background: var(--soft);
+
+  nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 14px;
+    flex: 1;
+  }
+
+  nav a {
+    color: var(--accent);
+    text-decoration: none;
+    padding: 4px 0;
+
+    &.active {
+      font-weight: 600;
+      border-bottom: 2px solid var(--accent);
+    }
+  }
+}
